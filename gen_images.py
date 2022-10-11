@@ -77,6 +77,7 @@ def make_transform(translate: Tuple[float,float], angle: float):
 @click.option('--translate', help='Translate XY-coordinate (e.g. \'0.3,1\')', type=parse_vec2, default='0,0', show_default=True, metavar='VEC2')
 @click.option('--rotate', help='Rotation angle in degrees', type=float, default=0, show_default=True, metavar='ANGLE')
 @click.option('--outdir', help='Where to save the output images', type=str, required=True, metavar='DIR')
+@click.option('--gpu', help='Available GPU numbers (e.g., \'1, 5\')', required=True)
 def generate_images(
     network_pkl: str,
     seeds: List[int],
@@ -85,7 +86,8 @@ def generate_images(
     outdir: str,
     translate: Tuple[float,float],
     rotate: float,
-    class_idx: Optional[int]
+    class_idx: Optional[int],
+    gpu: str
 ):
     """Generate images using pretrained network pickle.
 
@@ -101,6 +103,9 @@ def generate_images(
     python gen_images.py --outdir=out --trunc=0.7 --seeds=600-605 \\
         --network=https://api.ngc.nvidia.com/v2/models/nvidia/research/stylegan3/versions/1/files/stylegan3-t-metfacesu-1024x1024.pkl
     """
+
+    # set accessible GPU numbers
+    os.environ["CUDA_VISIBLE_DEVICES"] = gpu
 
     print('Loading networks from "%s"...' % network_pkl)
     device = torch.device('cuda')
